@@ -1,0 +1,137 @@
+{% set version = "3.0.0" %}
+{% set filename = "apache-arrow-" + version + ".tar.gz" %}
+{% set checksum = "73c2cc3be537aa1f3fd9490cfec185714168c9bfd599d23e287ab0cc0558e27a" %}
+
+package:
+  name: arrow-cpp
+  version: {{ version }}
+
+source:
+  fn: {{ filename }}
+  url: https://dist.apache.org/repos/dist/release/arrow/arrow-{{ version }}/{{ filename }}
+  sha256: {{ checksum }}
+
+build:
+  number: 3
+  run_exports:
+    - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
+  ignore_run_exports:
+    - grpc-cpp
+    - libevent {{ libevent }}
+    - re2
+    - glog
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - grpc-cpp {{ grpccpp }}
+    - cmake 3.19   # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
+    - autoconf
+    - ninja
+    - make
+    - utf8proc
+    - libboost {{ boost }}
+    - thrift-cpp >=0.13
+    - abseil-cpp
+    - libprotobuf {{ protobuf }}
+  host:
+    - aws-sdk-cpp
+    - abseil-cpp
+    - boost-cpp {{ boost }}
+    - brotli
+    - bzip2
+    - c-ares
+    - double-conversion
+    - flatbuffers
+    - gflags
+    - glog
+    - grpc-cpp {{ grpccpp }}
+    - libprotobuf {{ protobuf }}
+    - lz4-c
+    - numpy {{ numpy }}
+    - orc
+    - rapidjson
+    - re2
+    - snappy
+    - thrift-cpp >=0.13
+    - uriparser
+    - zlib {{ zlib }}
+    - zstd
+    - utf8proc
+    - openssl
+    - libevent {{ libevent }}
+    - python {{ python }}
+  run:
+    - {{ pin_compatible('numpy', lower_bound='1.11') }}
+    - boost-cpp {{ boost }}
+    - brotli
+    - c-ares
+    - double-conversion
+    - gflags
+    - glog
+    - grpc-cpp {{ grpccpp }}
+    - lz4-c
+    - libboost
+    - libprotobuf {{ protobuf }}
+    - openssl
+    - python {{ python }}
+    - re2
+    - snappy
+    - utf8proc
+    - uriparser
+    - zlib {{ zlib }}
+    - zstd
+
+test:
+  commands:
+    # headers
+    - test -f $PREFIX/include/arrow/api.h              # [unix]
+    - test -f $PREFIX/include/arrow/flight/types.h     # [unix]
+    - test -f $PREFIX/include/plasma/client.h          # [unix]
+    # - test -f $PREFIX/include/gandiva/engine.h         # [unix]
+    - test -f $PREFIX/include/parquet/api/reader.h     # [unix]
+    - if not exist %LIBRARY_INC%\\arrow\\api.h exit 1            # [win]
+    # - if not exist %LIBRARY_INC%\\gandiva\\engine.h exit 1       # [win]
+    - if not exist %LIBRARY_INC%\\parquet\\api\\reader.h exit 1  # [win]
+
+    # shared
+    - test -f $PREFIX/lib/libarrow${SHLIB_EXT}          # [unix]
+    - test -f $PREFIX/lib/libarrow_dataset${SHLIB_EXT}  # [unix]
+    - test -f $PREFIX/lib/libarrow_flight${SHLIB_EXT}   # [unix]
+    - test -f $PREFIX/lib/libarrow_python${SHLIB_EXT}   # [unux]
+    - test -f $PREFIX/lib/libparquet${SHLIB_EXT}        # [unix]
+    # - test -f $PREFIX/lib/libgandiva${SHLIB_EXT}        # [unix]
+    - test -f $PREFIX/lib/libplasma${SHLIB_EXT}         # [unix]
+    - if not exist %PREFIX%\\Library\\bin\\arrow.dll exit 1          # [win]
+    - if not exist %PREFIX%\\Library\\bin\\arrow_dataset.dll exir 1  # [win]
+    - if not exist %PREFIX%\\Library\\bin\\arrow_flight.dll exit 1   # [win]
+    - if not exist %PREFIX%\\Library\\bin\\arrow_python.dll exit 1   # [win]
+    - if not exist %PREFIX%\\Library\\bin\\parquet.dll exit 1        # [win]
+    # - if not exist %PREFIX%\\Library\\bin\\gandiva.dll exit 1        # [win]
+    # - if not exist %PREFIX%\\Library\\bin\\plasma.dll  exit 1        # [win]
+    # absence of static libraries
+    - test ! -f $PREFIX/lib/libarrow.a         # [unix]
+    - test ! -f $PREFIX/lib/libarrow_flight.a  # [unix]
+    - test ! -f $PREFIX/lib/libarrow_python.a  # [unix]
+    - test ! -f $PREFIX/lib/libplasma.a        # [unix]
+    - test ! -f $PREFIX/lib/libparquet.a       # [unix]
+    # - test ! -f $PREFIX/lib/libgandiva.a       # [unix]
+    - if exist %PREFIX%\\Library\\lib\\arrow_static.lib exit 1         # [win]
+    - if exist %PREFIX%\\Library\\lib\\arrow_flight_static.lib exit 1  # [win]
+    - if exist %PREFIX%\\Library\\lib\\arrow_python_static.lib exit 1  # [win]
+    - if exist %PREFIX%\\Library\\lib\\parquet_static.lib exit 1       # [win]
+    # - if exist %PREFIX%\\Library\\lib\\gandiva_static.lib exit 1       # [win]
+
+    # conda tools
+    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+    - conda inspect objects -p $PREFIX $PKG_NAME   # [osx]
+
+about:
+  home: http://github.com/apache/arrow
+  license: Apache 2.0
+  license_file: LICENSE.txt
+  summary: 'C++ libraries for Apache Arrow'
+
+extra:
+  recipe-maintainers:
+    - open-ce/open-ce-dev-team
