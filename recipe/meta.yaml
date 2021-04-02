@@ -85,27 +85,24 @@ requirements:
 test:
   commands:
     # headers
-    - test -f $PREFIX/include/arrow/api.h              # [unix]
-    - test -f $PREFIX/include/arrow/flight/types.h     # [unix]
-    - test -f $PREFIX/include/plasma/client.h          # [unix]
-    # - test -f $PREFIX/include/gandiva/engine.h         # [unix]
-    - test -f $PREFIX/include/parquet/api/reader.h     # [unix]
+    - test -f $PREFIX/include/arrow/api.h
+    - test -f $PREFIX/include/arrow/flight/types.h
+    - test -f $PREFIX/include/plasma/client.h
+    - test -f $PREFIX/include/parquet/api/reader.h
 
     # shared
-    - test -f $PREFIX/lib/libarrow${SHLIB_EXT}          # [unix]
-    - test -f $PREFIX/lib/libarrow_dataset${SHLIB_EXT}  # [unix]
-    - test -f $PREFIX/lib/libarrow_flight${SHLIB_EXT}   # [unix]
-    - test -f $PREFIX/lib/libarrow_python${SHLIB_EXT}   # [unux]
-    - test -f $PREFIX/lib/libparquet${SHLIB_EXT}        # [unix]
-    # - test -f $PREFIX/lib/libgandiva${SHLIB_EXT}        # [unix]
-    - test -f $PREFIX/lib/libplasma${SHLIB_EXT}         # [unix]
+    - test -f $PREFIX/lib/libarrow${SHLIB_EXT}
+    - test -f $PREFIX/lib/libarrow_dataset${SHLIB_EXT}
+    - test -f $PREFIX/lib/libarrow_flight${SHLIB_EXT}
+    - test -f $PREFIX/lib/libarrow_python${SHLIB_EXT}
+    - test -f $PREFIX/lib/libparquet${SHLIB_EXT}
+    - test -f $PREFIX/lib/libplasma${SHLIB_EXT}
     # absence of static libraries
-    - test ! -f $PREFIX/lib/libarrow.a         # [unix]
-    - test ! -f $PREFIX/lib/libarrow_flight.a  # [unix]
-    - test ! -f $PREFIX/lib/libarrow_python.a  # [unix]
-    - test ! -f $PREFIX/lib/libplasma.a        # [unix]
-    - test ! -f $PREFIX/lib/libparquet.a       # [unix]
-    # - test ! -f $PREFIX/lib/libgandiva.a       # [unix]
+    - test ! -f $PREFIX/lib/libarrow.a
+    - test ! -f $PREFIX/lib/libarrow_flight.a
+    - test ! -f $PREFIX/lib/libarrow_python.a
+    - test ! -f $PREFIX/lib/libplasma.a
+    - test ! -f $PREFIX/lib/libparquet.a
 
     # conda tools
     - conda inspect linkages -p $PREFIX $PKG_NAME

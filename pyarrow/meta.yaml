@@ -55,15 +55,14 @@ test:
     - pyarrow
     - pyarrow.dataset
     - pyarrow.flight
-    - pyarrow.orc      # [unix]
+    - pyarrow.orc
     - pyarrow.parquet
-    - pyarrow.plasma   # [unix]
+    - pyarrow.plasma
     - pyarrow.fs
     - pyarrow._s3fs
     - pyarrow._hdfs
   commands:
-    - test ! -f ${SP_DIR}/pyarrow/tests/test_array.py                         # [unix]
-    - if exist %SP_DIR%/pyarrow/tests/test_array.py exit 1                    # [win]
+    - test ! -f ${SP_DIR}/pyarrow/tests/test_array.py
 
 about:
   home: http://github.com/apache/arrow
