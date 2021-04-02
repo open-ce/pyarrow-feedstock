@@ -1,0 +1,6 @@
+recipes:
+  - name : arrow-cpp
+    path : recipe
+
+  - name : pyarrow
+    path : pyarrow
