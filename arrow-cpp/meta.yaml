@@ -17,6 +17,7 @@ build:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
   ignore_run_exports:
     - grpc-cpp
+    - libprotobuf
     - libevent {{ libevent }}
     - re2
     - glog
@@ -32,7 +33,7 @@ requirements:
     - utf8proc
     - libboost {{ boost }}
     - thrift-cpp >=0.13
-    - abseil-cpp
+    - abseil-cpp {{ abseil_cpp }}
     - libprotobuf {{ protobuf }}
   host:
     - aws-sdk-cpp
@@ -79,7 +80,7 @@ requirements:
     - snappy
     - utf8proc
     - uriparser
-    - zlib {{ zlib }}
+    - zlib    # handled by run exports
     - zstd
 
 test:
