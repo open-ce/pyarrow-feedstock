@@ -1,0 +1,282 @@
+{% set version = "3.0.0" %}
+{% set build_ext_version = version %}
+{% set build_ext = "cuda" if cuda_enabled else "cpu" %}
+{% set proc_build_number = "1" %}
+{% set filename = "apache-arrow-" + version + ".tar.gz" %}
+{% set checksum = "73c2cc3be537aa1f3fd9490cfec185714168c9bfd599d23e287ab0cc0558e27a" %}
+
+package:
+  name: arrow-cpp-ext
+  version: {{ version }}
+
+source:
+  fn: {{ filename }}
+  url: https://dist.apache.org/repos/dist/release/arrow/arrow-{{ version }}/{{ filename }}
+  sha256: {{ checksum }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
+
+outputs:
+  - name: arrow-cpp-proc
+    version: {{ build_ext_version }}
+    build:
+      number: {{ proc_build_number }}
+      string: "{{ build_ext }}"
+    test:
+      commands:
+        - exit 0
+    about:
+      home: http://github.com/apache/arrow
+      license: Apache-2.0
+      license_file:
+        - LICENSE.txt
+      summary: 'A meta-package to select Arrow build variant'
+
+  - name: arrow-cpp
+    script: build-arrow.sh
+    version: {{ version }}
+    build:
+      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      run_exports:
+        - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
+      ignore_run_exports:
+        - cudatoolkit
+      track_features:
+        {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
+#    - grpc-cpp
+#    - libprotobuf
+#    - libevent {{ libevent }}
+#    - re2
+#    - glog
+    requirements:
+      build:
+        - libprotobuf {{ protobuf }}
+        - grpc-cpp {{ grpc_cpp }}
+        - cmake 3.19   # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
+        - autoconf
+        - ninja
+        - make
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+#    - utf8proc
+#    - libboost {{ boost }}
+#    - thrift-cpp >=0.13
+#    - abseil-cpp {{ abseil_cpp }}
+      host:
+        # Disable AWS S3 support
+        #- aws-sdk-cpp
+#    - abseil-cpp
+        - boost-cpp {{ boost }}
+        - brotli
+        - bzip2
+        - c-ares
+        - gflags
+        - glog
+        - grpc-cpp {{ grpc_cpp }}
+#    - double-conversion
+#    - flatbuffers
+        - libprotobuf {{ protobuf }}
+        - libutf8proc
+        - lz4-c
+        - numpy {{ numpy }}
+        - orc
+        - python {{ python }}
+        - rapidjson
+        - re2
+        - snappy
+        - thrift-cpp
+#    - uriparser
+        - zlib {{ zlib }}
+        - zstd
+
+#    - openssl
+#    - libevent {{ libevent }}
+      run:
+        - {{ pin_compatible('numpy', lower_bound='1.16') }}
+        - python {{ python }}
+#    - boost-cpp {{ boost }}
+#    - brotli
+#    - c-ares
+#    - double-conversion
+#    - gflags
+#    - glog
+#    - grpc-cpp {{ grpc_cpp }}
+#    - lz4-c
+#    - libboost
+#    - libprotobuf {{ protobuf }}
+#    - openssl
+#    - re2
+#    - snappy
+#    - utf8proc
+#    - uriparser
+#    - zlib    # handled by run exports
+#    - zstd
+      run_constrained:
+        - arrow-cpp-proc * {{ build_ext }}
+        - cudatoolkit >=10.2    #[build_type == 'cuda']
+
+    about:
+      home: http://github.com/apache/arrow
+      license: Apache-2.0
+      license_File:
+        - LICENSE.txt
+      summary: C++ libraries for Apache Arrow
+
+    test:
+      commands:
+        # headers
+        - test -f $PREFIX/include/arrow/api.h
+        - test -f $PREFIX/include/arrow/flight/types.h
+        - test -f $PREFIX/include/plasma/client.h
+        - test -f $PREFIX/include/gandiva/engine.h 
+        - test -f $PREFIX/include/parquet/api/reader.h
+
+        # shared
+        - test -f $PREFIX/lib/libarrow${SHLIB_EXT}
+        - test -f $PREFIX/lib/libarrow_dataset${SHLIB_EXT}
+        - test -f $PREFIX/lib/libarrow_flight${SHLIB_EXT}
+        - test -f $PREFIX/lib/libarrow_python${SHLIB_EXT}
+        - test -f $PREFIX/lib/libparquet${SHLIB_EXT}
+        - test -f $PREFIX/lib/libplasma${SHLIB_EXT}
+        - test -f $PREFIX/lib/libarrow_cuda${SHLIB_EXT}    # [build_type == 'cuda']
+        - test ! -f $PREFIX/lib/libarrow_cuda${SHLIB_EXT}  # [build_type == 'cuda']   
+
+        # absence of static libraries
+        - test ! -f $PREFIX/lib/libarrow.a
+        - test ! -f $PREFIX/lib/libarrow_dataset.a
+        - test ! -f $PREFIX/lib/libarrow_flight.a
+        - test ! -f $PREFIX/lib/libarrow_python.a
+        - test ! -f $PREFIX/lib/libplasma.a
+        - test ! -f $PREFIX/lib/libparquet.a
+        # - test ! -f $PREFIX/lib/libgandiva.a
+
+        # conda tools
+        - conda inspect linkages -p $PREFIX $PKG_NAME
+
+
+  - name: pyarrow
+    script: build-pyarrow.sh
+    version: {{ version }}
+    build:
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      ignore_run_exports:
+        - cudatoolkit
+      track_features:
+        {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
+    build:
+      - cmake
+      - ninja
+      - make
+      - {{ compiler('c') }}
+      - {{ compiler('cxx') }}
+    host:
+      - {{ pin_subpackage('arrow-cpp', exact=True) }}
+      - cython
+      - numpy {{ numpy }}
+      - python {{ python }}
+      - setuptools {{ setuptools }}
+      - setuptools_scm
+      - six {{ six }}
+#   - arrow-cpp {{ arrow }}
+#    - boost-cpp {{ boost }}
+#    - grpc-cpp {{ grpc_cpp }}
+#    - setuptools-scm 5.0.2
+#    - uriparser
+
+    run:
+      - {{ pin_subpackage('arrow-cpp', exact=True) }}
+      - {{ pin_compatible('numpy', lower_bound='1.16') }}
+      # empty parquet-cpp metapackage, force old versions to be uninstalled
+      - parquet-cpp 1.5.1.*
+      - python {{ python }}
+    run_constrained:
+      - arrow-cpp-proc * {{ build_ext }}
+      - cudatoolkit >=10.2  # [build_type == 'cuda']
+#    - boost-cpp {{ boost }}
+#    - glog
+#    - pandas
+#    - six {{ six }}
+#    - snappy
+#    - gflags
+  about:
+    home: http://github.com/apache/arrow
+    license: Apache-2.0
+    license_file:
+      - LICENSE.txt
+    summary: Python libraries for Apache Arrow
+
+  test:
+    imports:
+      - pyarrow
+      - pyarrow.dataset
+      - pyarrow.flight
+      # Disable gandiva
+      #- pyarrow.gandiva
+      - pyarrow.orc
+      - pyarrow.parquet
+      - pyarrow.plasma
+      # Disable S3
+      #- pyarrow.fs
+      #- pyarrow._s3fs
+      - pyarrow._hdfs
+      - pyarrow.cuda   # [build_type == 'cuda']
+    commands:
+      - test ! -f ${SP_DIR}/pyarrow/tests/test_array.py
+
+  - name: pyarrow-tests
+    script: build-pyarrow.sh
+    version: {{ version }}
+    build:
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      ignore_run_exports:
+        - cudatoolkit
+      track_features:
+        {{ "- arrow-cuda" if build_type == 'cuda' }}
+    requirements:
+      build:
+        - cmake
+        - ninja
+        - make
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+      host:
+        - {{ pin_subpackage('arrow-cpp', exact=True) }}
+        - {{ pin_subpackage('pyarrow', exact=True) }}
+        - cython
+        - numpy {{ numpy }}
+        - python {{ python }}
+        - setuptools
+        - setuptools_scm
+        - six
+      run:
+        - {{ pin_subpackage('pyarrow', exact=True) }}
+        - python {{ python }}
+      run_contrained:
+        - arrow-cpp-proc * {{ build_ext }}
+        - cudatoolkit >=10.2   # [build_type == 'cuda']
+
+    about:
+      home: http://github.com/apache/arrow
+      license: Apache-2.0
+      license_file:
+        - LICENSE.txt
+      summary: Python test files for Apache Arrow
+
+    test:
+      commands:
+        - test -f ${SP_DIR}/pyarrow/tests/test_array.py
+
+about:
+  home: http://github.com/apache/arrow
+  license: Apache-2.0
+  license_file:
+    - LICENSE.txt
+  summary: C++ and Python libraries for Apache Arrow
+
+extra:
+  recipe-maintainers:
+    - open-ce/open-ce-dev-team
+
