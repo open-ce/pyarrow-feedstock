@@ -21,8 +21,6 @@ set -x
 mkdir cpp/build
 pushd cpp/build
 
-pwd
-
 EXTRA_CMAKE_ARGS=""
 
 # Include g++'s system headers
@@ -55,7 +53,6 @@ EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_GANDIVA=OFF"
 export BOOST_ROOT="${LIBRARY_PREFIX}"
 export Boost_ROOT="${LIBRARY_PREFIX}"
 
-pwd
 cmake \
     -DARROW_BOOST_USE_SHARED=ON \
     -DARROW_BUILD_BENCHMARKS=OFF \
