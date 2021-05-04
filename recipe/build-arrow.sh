@@ -30,11 +30,36 @@ if [ "$(uname)" == "Linux" ]; then
   sed -ie 's;"--with-jemalloc-prefix\=je_arrow_";"--with-jemalloc-prefix\=je_arrow_" "--with-lg-page\=16";g' ../cmake_modules/ThirdpartyToolchain.cmake
 fi
 
-# we don't provide right now CUDA variant
-EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_CUDA=OFF"
+# Enable CUDA support
+if [ "${build_type}" = "cuda" ]; then
+  if [[ -z "${CUDA_HOME+x}" ]]
+    then
+        echo "cuda version=${cudatoolkit} CUDA_HOME=$CUDA_HOME"
+        CUDA_GDB_EXECUTABLE=$(which cuda-gdb || exit 0)
+        if [[ -n "$CUDA_GDB_EXECUTABLE" ]]
+        then
+            CUDA_HOME=$(dirname $(dirname $CUDA_GDB_EXECUTABLE))
+        else
+            echo "Cannot determine CUDA_HOME: cuda-gdb not in PATH"
+            return 1
+        fi
+    fi
+  EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_CUDA=ON -DCUDA_TOOLKIT_ROOT_DIR=${CUDA_HOME} -DCMAKE_LIBRARY_PATH=${CUDA_HOME}/lib64/stubs"
+else
+  EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_CUDA=OFF"
+fi
+# Disable Gandiva
 EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_GANDIVA=OFF"
 export BOOST_ROOT="${LIBRARY_PREFIX}"
 export Boost_ROOT="${LIBRARY_PREFIX}"
+
+#SIMD Settings
+if [[ "${target_platform}" == "linux-64" ]]; then
+  EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_SIMD_LEVEL=SSE4_2"
+fi
+if [[ "${target_platform}" == "linux-ppc64le" ]]; then
+  EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_ALTIVEC=ON"
+fi
 
 cmake \
     -DARROW_BOOST_USE_SHARED=ON \
@@ -43,30 +68,33 @@ cmake \
     -DARROW_BUILD_TESTS=OFF \
     -DARROW_BUILD_UTILITIES=OFF \
     -DBUILD_SHARED_LIBS=ON \
-    -DARROW_SSE42=OFF \
-    -DCMAKE_BUILD_TYPE=release \
-    -DCMAKE_INSTALL_PREFIX=$PREFIX \
-    -DCMAKE_INSTALL_LIBDIR=$PREFIX/lib \
+    -DARROW_DATASET=ON \
     -DARROW_DEPENDENCY_SOURCE=SYSTEM \
-    -DARROW_PACKAGE_PREFIX=$PREFIX \
-    -DPYTHON_EXECUTABLE=$PYTHON \
-    -DPython3_EXECUTABLE=$PYTHON \
-    -DARROW_DATASETS=ON \
+    -DARROW_FLIGHT=ON \
+    -DARROW_FLIGHT_REQUIRE_TLSCREDENTIALSOPTIONS=ON \
+    -DARROW_HDFS=ON \
     -DARROW_JEMALLOC=ON \
     -DARROW_MIMALLOC=ON \
-    -DARROW_HDFS=ON \
-    -DARROW_FLIGHT=ON \
+    -DARROW_ORC=ON \
+    -DARROW_PACKAGE_PREFIX=$PREFIX \
+    -DARROW_PARQUET=ON \
     -DARROW_PLASMA=ON \
     -DARROW_PYTHON=ON \
-    -DARROW_PARQUET=ON \
-    -DARROW_ORC=ON \
-    -DARROW_S3=ON \
+    -DARROW_S3=OFF \
+    -DARROW_USE_LD_GOLD=ON \
     -DARROW_WITH_BROTLI=ON \
     -DARROW_WITH_BZ2=ON \
     -DARROW_WITH_LZ4=ON \
     -DARROW_WITH_SNAPPY=ON \
     -DARROW_WITH_ZLIB=ON \
     -DARROW_WITH_ZSTD=ON \
+    -DCMAKE_BUILD_TYPE=release \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_PREFIX=$PREFIX \
+    -DLLVM_TOOLS_BINARY_DIR=$PREFIX/bin \
+    -DPYTHON_EXECUTABLE=$PYTHON \
+    -DPython3_EXECUTABLE=$PYTHON \
+    -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc \
     -DCMAKE_AR=${AR} \
     -DCMAKE_RANLIB=${RANLIB} \
     -GNinja \
