@@ -22,7 +22,7 @@ outputs:
     version: {{ build_ext_version }}
     build:
       number: {{ proc_build_number }}
-      string: {{ build_ext }}
+      string: {{ PKG_BUILDNUM }}_{{ build_ext }}
     test:
       commands:
         - exit 0
