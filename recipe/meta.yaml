@@ -13,7 +13,7 @@ source:
   sha256: {{ checksum }}
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -37,7 +37,7 @@ outputs:
     script: build-arrow.sh
     version: {{ version }}
     build:
-      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}
 {% if build_type == 'cuda' %}
       script_env:
         - CUDA_HOME
@@ -134,7 +134,7 @@ outputs:
     script: build-pyarrow.sh
     version: {{ version }}
     build:
-      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}
 {% if build_type == 'cuda' %}
       script_env:
         - CUDA_HOME
@@ -191,7 +191,7 @@ outputs:
     script: build-pyarrow.sh
     version: {{ version }}
     build:
-      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}
 {% if build_type == 'cuda' %}
       script_env:
         - CUDA_HOME
