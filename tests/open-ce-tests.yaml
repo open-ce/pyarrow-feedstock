@@ -1,0 +1,32 @@
+tests:
+  - name: Setup Apache Arrow Tests
+    command: |
+        PYARROW_LOCATION=$(python -c "import os; import pyarrow; print(os.path.dirname(pyarrow.__file__))")
+        echo $PYARROW_LOCATION
+        conda install -y git
+        git clone -b apache-arrow-$(python -c "import pyarrow; print(pyarrow.__version__)") http://github.com/apache/arrow
+        cp -r arrow/python/pyarrow/tests $PYARROW_LOCATION
+        conda install -y hypothesis pytest pytz numpy
+        pip install pytest-lazy-fixture
+        pushd arrow/testing
+        export ARROW_TEST_DATA=$(pwd)
+        popd
+  - name: Test Imports
+    command: |
+        python -c "import pyarrow" 
+        python -c "import pyarrow.dataset" 
+        python -c "import pyarrow.flight" 
+        python -c "import pyarrow.orc" 
+        python -c "import pyarrow.parquet" 
+        python -c "import pyarrow._hdfs" 
+
+  - name: Test Imports - CUDA
+    command: |
+        python -c "import pyarrow" 
+        python -c "import pyarrow.plasma" 
+        python -c "import pyarrow.cuda" 
+
+  - name: Run Unit Tests
+    command: |
+        PYARROW_LOCATION=$(python -c "import os; import pyarrow; print(os.path.dirname(pyarrow.__file__))")
+        python -m pytest -k "not test_foreign_buffer and not test_get_include and not test_flight" $PYARROW_LOCATION
