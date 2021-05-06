@@ -20,13 +20,17 @@ tests:
         python -c "import pyarrow.parquet" 
         python -c "import pyarrow._hdfs" 
 
+{% if build_type == 'cuda' %}
   - name: Test Imports - CUDA
     command: |
         python -c "import pyarrow" 
         python -c "import pyarrow.plasma" 
         python -c "import pyarrow.cuda" 
+{% endif %}
 
   - name: Run Unit Tests
     command: |
         PYARROW_LOCATION=$(python -c "import os; import pyarrow; print(os.path.dirname(pyarrow.__file__))")
         python -m pytest -k "not test_foreign_buffer and not test_get_include and not test_flight" $PYARROW_LOCATION
+  - name: Clean tests
+    command: rm -rf arrow
