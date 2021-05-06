@@ -8,9 +8,6 @@ tests:
         cp -r arrow/python/pyarrow/tests $PYARROW_LOCATION
         conda install -y hypothesis pytest pytz numpy
         pip install pytest-lazy-fixture
-        pushd arrow/testing
-        export ARROW_TEST_DATA=$(pwd)
-        popd
   - name: Test Imports
     command: |
         python -c "import pyarrow" 
@@ -31,6 +28,9 @@ tests:
   - name: Run Unit Tests
     command: |
         PYARROW_LOCATION=$(python -c "import os; import pyarrow; print(os.path.dirname(pyarrow.__file__))")
+        pushd arrow/testing
+        export ARROW_TEST_DATA=$(pwd)
+        popd
         python -m pytest -k "not test_foreign_buffer and not test_get_include and not test_flight" $PYARROW_LOCATION
   - name: Clean tests
     command: rm -rf arrow
