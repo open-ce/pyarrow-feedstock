@@ -48,6 +48,7 @@ outputs:
         - cudatoolkit
         - grpc-cpp
         - libprotobuf
+        - zstd
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -82,12 +83,13 @@ outputs:
         - snappy
         - thrift-cpp
         - zlib {{ zlib }}
-        - zstd
+        - zstd {{ zstd }}
       run:
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - python {{ python }}
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ protobuf }}
+        - zstd {{ zstd }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
         - cudatoolkit >=10.2    #[build_type == 'cuda']
