@@ -49,6 +49,7 @@ outputs:
         - grpc-cpp
         - libprotobuf
         - zstd
+        - orc
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -76,7 +77,7 @@ outputs:
         - libutf8proc
         - lz4-c
         - numpy {{ numpy }}
-        - orc
+        - orc 1.6.*
         - python {{ python }}
         - rapidjson
         - re2
@@ -90,6 +91,7 @@ outputs:
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ protobuf }}
         - zstd {{ zstd }}
+        - orc 1.6.*
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
         - cudatoolkit >=10.2    #[build_type == 'cuda']
