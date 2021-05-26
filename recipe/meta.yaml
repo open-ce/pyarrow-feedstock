@@ -101,7 +101,7 @@ outputs:
     about:
       home: http://github.com/apache/arrow
       license: Apache-2.0
-      license_File:
+      license_file:
         - LICENSE.txt
       summary: C++ libraries for Apache Arrow
 
