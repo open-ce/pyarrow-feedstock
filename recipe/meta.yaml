@@ -13,7 +13,7 @@ source:
   sha256: {{ checksum }}
 
 build:
-  number: 6
+  number: 7
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -37,7 +37,8 @@ outputs:
     script: build-arrow.sh
     version: {{ version }}
     build:
-      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
+      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
 {% if build_type == 'cuda' %}
       script_env:
         - CUDA_HOME
@@ -69,6 +70,7 @@ outputs:
         - brotli
         - bzip2
         - c-ares
+        - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - gflags
         - glog
         - grpc-cpp {{ grpc_cpp }}
@@ -87,6 +89,7 @@ outputs:
         - zstd {{ zstd }}
       run:
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
+        - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ protobuf }}
@@ -94,12 +97,11 @@ outputs:
         - orc 1.6.*
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
-        - cudatoolkit >=10.2    #[build_type == 'cuda']
 
     about:
       home: http://github.com/apache/arrow
       license: Apache-2.0
-      license_File:
+      license_file:
         - LICENSE.txt
       summary: C++ libraries for Apache Arrow
 
@@ -138,7 +140,8 @@ outputs:
     script: build-pyarrow.sh
     version: {{ version }}
     build:
-      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
 {% if build_type == 'cuda' %}
       script_env:
         - CUDA_HOME
@@ -156,6 +159,7 @@ outputs:
         - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
+        - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - cython
         - numpy {{ numpy }}
         - python {{ python }}
@@ -166,10 +170,10 @@ outputs:
       run:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
+        - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
-        - cudatoolkit >=10.2  # [build_type == 'cuda']
 
     about:
       home: http://github.com/apache/arrow
