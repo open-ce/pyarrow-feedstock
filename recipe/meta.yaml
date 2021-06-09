@@ -63,6 +63,9 @@ outputs:
         - make
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng  {{ libstdcxx }}
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -87,6 +90,9 @@ outputs:
         - thrift-cpp
         - zlib {{ zlib }}
         - zstd {{ zstd }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng  {{ libstdcxx }}
       run:
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
