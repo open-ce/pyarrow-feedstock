@@ -62,7 +62,9 @@ outputs:
       build:
         - libprotobuf {{ protobuf }}
         - grpc-cpp {{ grpc_cpp }}
-        - cmake 3.19   # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
+        # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
+        - cmake 3.19        # [not s390x]
+        - cmake {{ cmake }} # [s390x]
         - autoconf
         - ninja
         - make
@@ -83,7 +85,7 @@ outputs:
         - glog
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ protobuf }}
-        - llvmdev 10
+        - llvmdev 10  # [not s390x]
         - libutf8proc
         - lz4-c
         - numpy {{ numpy }}
@@ -99,6 +101,7 @@ outputs:
         - libgcc-ng  {{ libgcc }}
         - libstdcxx-ng {{ libstdcxx }}
       run:
+        - brotli  # [s390x]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
@@ -109,6 +112,7 @@ outputs:
         # Use pins to control cos6/cos7 match
         - libgcc-ng  {{ libgcc }}
         - libstdcxx-ng {{ libstdcxx }}
+        - libutf8proc  # [s390x]
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
@@ -191,12 +195,14 @@ outputs:
         - libstdcxx-ng {{ libstdcxx }}
       run:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
+        - brotli  # [s390x]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
         # Use pins to control cos6/cos7 match
         - libgcc-ng  {{ libgcc }}
         - libstdcxx-ng {{ libstdcxx }}
+        - libutf8proc  # [s390x]
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
