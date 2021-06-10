@@ -11,6 +11,8 @@ package:
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/arrow-{{ version }}/apache-arrow-{{ version }}.tar.gz
   sha256: {{ checksum }}
+  patches:
+    - pandas_conversion_error.patch
 
 build:
   number: 7

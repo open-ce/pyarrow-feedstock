@@ -1,0 +1,19 @@
+diff --git a/cpp/src/arrow/python/arrow_to_pandas.cc b/cpp/src/arrow/python/arrow_to_pandas.cc
+index cc386f589..5d24f95e7 100644
+--- a/cpp/src/arrow/python/arrow_to_pandas.cc
++++ b/cpp/src/arrow/python/arrow_to_pandas.cc
+@@ -923,10 +923,11 @@ inline void ConvertNumericNullableCast(const ChunkedArray& data, InType na_value
+   for (int c = 0; c < data.num_chunks(); c++) {
+     const auto& arr = *data.chunk(c);
+     const InType* in_values = GetPrimitiveValues<InType>(arr);
+-
+     for (int64_t i = 0; i < arr.length(); ++i) {
+-      *out_values++ = arr.IsNull(i) ? static_cast<OutType>(na_value)
+-                                    : static_cast<OutType>(in_values[i]);
++      if (arr.IsNull(i))
++          out_values[i] = static_cast<OutType>(na_value);
++      else
++	  out_values[i] = static_cast<OutType>(in_values[i]);
+     }
+   }
+ }
