@@ -11,9 +11,12 @@ package:
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/arrow-{{ version }}/apache-arrow-{{ version }}.tar.gz
   sha256: {{ checksum }}
+  patches:
+    # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
+    - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
 
 build:
-  number: 8
+  number: 9
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
