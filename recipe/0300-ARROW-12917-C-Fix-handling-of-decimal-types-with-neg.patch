@@ -1,0 +1,93 @@
+From 4e4b0d7a1fee440f66b13cfee2cc65e2f201a1bd Mon Sep 17 00:00:00 2001
+From: Jason Furmanek <furmanek@us.ibm.com>
+Date: Mon, 14 Jun 2021 08:37:57 -0500
+Subject: [PATCH] ARROW-12917: [C++] Fix handling of decimal types with
+ negative scale in C data import
+
+---
+ cpp/src/arrow/c/bridge.cc      |  4 ++--
+ cpp/src/arrow/c/bridge_test.cc | 27 ++++++++++++++++++++++++++-
+ 2 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/cpp/src/arrow/c/bridge.cc b/cpp/src/arrow/c/bridge.cc
+index 5cb3e57..a43bf81 100644
+--- a/cpp/src/arrow/c/bridge.cc
++++ b/cpp/src/arrow/c/bridge.cc
+@@ -984,11 +984,11 @@ struct SchemaImporter {
+     if (prec_scale.size() != 2 && prec_scale.size() != 3) {
+       return f_parser_.Invalid();
+     }
+-    if (prec_scale[0] <= 0 || prec_scale[1] <= 0) {
++    if (prec_scale[0] <= 0) {
+       return f_parser_.Invalid();
+     }
+     if (prec_scale.size() == 2 || prec_scale[2] == 128) {
+-      type_ = decimal(prec_scale[0], prec_scale[1]);
++      type_ = decimal128(prec_scale[0], prec_scale[1]);
+     } else if (prec_scale[2] == 256) {
+       type_ = decimal256(prec_scale[0], prec_scale[1]);
+     } else {
+diff --git a/cpp/src/arrow/c/bridge_test.cc b/cpp/src/arrow/c/bridge_test.cc
+index fc11f12..51fbe99 100644
+--- a/cpp/src/arrow/c/bridge_test.cc
++++ b/cpp/src/arrow/c/bridge_test.cc
+@@ -282,6 +282,12 @@ TEST_F(TestSchemaExport, Primitive) {
+ 
+   TestPrimitive(decimal(16, 4), "d:16,4");
+   TestPrimitive(decimal256(16, 4), "d:16,4,256");
++
++  TestPrimitive(decimal(15,0), "d:15,0");
++  TestPrimitive(decimal256(15,0), "d:15,0,256");
++
++  TestPrimitive(decimal(15,-4), "d:15,-4");
++  TestPrimitive(decimal256(15,-4), "d:15,-4,256");
+ }
+ 
+ TEST_F(TestSchemaExport, Temporal) {
+@@ -1195,6 +1201,20 @@ TEST_F(TestSchemaImport, Primitive) {
+   CheckImport(field("", decimal128(16, 4)));
+   FillPrimitive("d:16,4,256");
+   CheckImport(field("", decimal256(16, 4)));
++
++  FillPrimitive("d:16,0");
++  CheckImport(field("", decimal128(16, 0)));
++  FillPrimitive("d:16,0,128");
++  CheckImport(field("", decimal128(16, 0)));
++  FillPrimitive("d:16,0,256");
++  CheckImport(field("", decimal256(16, 0)));
++
++  FillPrimitive("d:16,-4");
++  CheckImport(field("", decimal128(16, -4)));
++  FillPrimitive("d:16,-4,128");
++  CheckImport(field("", decimal128(16, -4)));
++  FillPrimitive("d:16,-4,256");
++  CheckImport(field("", decimal256(16, -4)));
+ }
+ 
+ TEST_F(TestSchemaImport, Temporal) {
+@@ -1394,6 +1414,8 @@ TEST_F(TestSchemaImport, FormatStringError) {
+   CheckImportError();
+   FillPrimitive("d:15.4");
+   CheckImportError();
++  FillPrimitive("d:15,z");
++  CheckImportError();
+   FillPrimitive("t");
+   CheckImportError();
+   FillPrimitive("td");
+@@ -2381,9 +2403,12 @@ TEST_F(TestSchemaRoundtrip, Primitive) {
+   TestWithTypeFactory(boolean);
+   TestWithTypeFactory(float16);
+ 
+-  TestWithTypeFactory(std::bind(decimal, 19, 4));
+   TestWithTypeFactory(std::bind(decimal128, 19, 4));
+   TestWithTypeFactory(std::bind(decimal256, 19, 4));
++  TestWithTypeFactory(std::bind(decimal128, 19, 0));
++  TestWithTypeFactory(std::bind(decimal256, 19, 0));
++  TestWithTypeFactory(std::bind(decimal128, 19, -5));
++  TestWithTypeFactory(std::bind(decimal256, 19, -5));
+   TestWithTypeFactory(std::bind(fixed_size_binary, 3));
+   TestWithTypeFactory(binary);
+   TestWithTypeFactory(large_utf8);
+-- 
+1.8.3.1
+
