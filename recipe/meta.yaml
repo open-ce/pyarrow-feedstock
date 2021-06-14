@@ -51,6 +51,8 @@ outputs:
         - libprotobuf
         - zstd
         - orc
+        - libgcc-ng
+        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -65,7 +67,7 @@ outputs:
         - {{ compiler('cxx') }}
         # Use pins to control cos6/cos7 match
         - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng  {{ libstdcxx }}
+        - libstdcxx-ng {{ libstdcxx }}
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -92,7 +94,7 @@ outputs:
         - zstd {{ zstd }}
         # Use pins to control cos6/cos7 match
         - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng  {{ libstdcxx }}
+        - libstdcxx-ng {{ libstdcxx }}
       run:
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
@@ -101,6 +103,9 @@ outputs:
         - libprotobuf {{ protobuf }}
         - zstd {{ zstd }}
         - orc 1.6.*
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
@@ -154,6 +159,8 @@ outputs:
 {% endif %}
       ignore_run_exports:
         - cudatoolkit
+        - libgcc-ng
+        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -163,6 +170,9 @@ outputs:
         - make
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       host:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
@@ -173,11 +183,17 @@ outputs:
         - setuptools_scm 5.0.2
         - setuptools-scm 5.0.2
         - six {{ six }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       run:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
