@@ -11,9 +11,12 @@ package:
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/arrow-{{ version }}/apache-arrow-{{ version }}.tar.gz
   sha256: {{ checksum }}
+  patches:
+    # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
+    - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
 
 build:
-  number: 5
+  number: 11
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -22,7 +25,7 @@ outputs:
     version: {{ build_ext_version }}
     build:
       number: {{ proc_build_number }}
-      string: {{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: {{ build_ext }}
     test:
       commands:
         - exit 0
@@ -37,7 +40,8 @@ outputs:
     script: build-arrow.sh
     version: {{ version }}
     build:
-      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
+      string: py{{ CONDA_PY}}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
 {% if build_type == 'cuda' %}
       script_env:
         - CUDA_HOME
@@ -48,6 +52,10 @@ outputs:
         - cudatoolkit
         - grpc-cpp
         - libprotobuf
+        - zstd
+        - orc
+        - libgcc-ng
+        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -60,6 +68,9 @@ outputs:
         - make
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -67,6 +78,7 @@ outputs:
         - brotli
         - bzip2
         - c-ares
+        - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - gflags
         - glog
         - grpc-cpp {{ grpc_cpp }}
@@ -75,27 +87,35 @@ outputs:
         - libutf8proc
         - lz4-c
         - numpy {{ numpy }}
-        - orc
+        - orc 1.6.*
         - python {{ python }}
         - rapidjson
         - re2
         - snappy
         - thrift-cpp
         - zlib {{ zlib }}
-        - zstd
+        - zstd {{ zstd }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       run:
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
+        - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ protobuf }}
+        - zstd {{ zstd }}
+        - orc 1.6.*
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
-        - cudatoolkit >=10.2    #[build_type == 'cuda']
 
     about:
       home: http://github.com/apache/arrow
       license: Apache-2.0
-      license_File:
+      license_file:
         - LICENSE.txt
       summary: C++ libraries for Apache Arrow
 
@@ -134,13 +154,16 @@ outputs:
     script: build-pyarrow.sh
     version: {{ version }}
     build:
-      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
+      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
 {% if build_type == 'cuda' %}
       script_env:
         - CUDA_HOME
 {% endif %}
       ignore_run_exports:
         - cudatoolkit
+        - libgcc-ng
+        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -150,8 +173,12 @@ outputs:
         - make
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       host:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
+        - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - cython
         - numpy {{ numpy }}
         - python {{ python }}
@@ -159,13 +186,19 @@ outputs:
         - setuptools_scm 5.0.2
         - setuptools-scm 5.0.2
         - six {{ six }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       run:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
+        - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
+        # Use pins to control cos6/cos7 match
+        - libgcc-ng  {{ libgcc }}
+        - libstdcxx-ng {{ libstdcxx }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
-        - cudatoolkit >=10.2  # [build_type == 'cuda']
 
     about:
       home: http://github.com/apache/arrow
@@ -181,59 +214,9 @@ outputs:
         - pyarrow.flight
         - pyarrow.orc
         - pyarrow.parquet
-        - pyarrow.plasma
         - pyarrow._hdfs
-        - pyarrow.cuda   # [build_type == 'cuda']
       commands:
         - test ! -f ${SP_DIR}/pyarrow/tests/test_array.py
-
-  - name: pyarrow-tests
-    script: build-pyarrow.sh
-    version: {{ version }}
-    build:
-      string: py{{ CONDA_PY }}h{{ PKG_HASH }}_pb{{ protobuf | replace(".*", "")}}_{{ PKG_BUILDNUM }}_{{ build_ext }}
-{% if build_type == 'cuda' %}
-      script_env:
-        - CUDA_HOME
-{% endif %}
-      ignore_run_exports:
-        - cudatoolkit
-      track_features:
-        {{ "- arrow-cuda" if build_type == 'cuda' else ""}}
-    requirements:
-      build:
-        - cmake
-        - ninja
-        - make
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-      host:
-        - {{ pin_subpackage('arrow-cpp', exact=True) }}
-        - {{ pin_subpackage('pyarrow', exact=True) }}
-        - cython
-        - numpy {{ numpy }}
-        - python {{ python }}
-        - setuptools {{ setuptools }}
-        - setuptools_scm 5.0.2
-        - setuptools-scm 5.0.2
-        - six
-      run:
-        - {{ pin_subpackage('pyarrow', exact=True) }}
-        - python {{ python }}
-      run_contrained:
-        - arrow-cpp-proc * {{ build_ext }}
-        - cudatoolkit >=10.2   # [build_type == 'cuda']
-
-    about:
-      home: http://github.com/apache/arrow
-      license: Apache-2.0
-      license_file:
-        - LICENSE.txt
-      summary: Python test files for Apache Arrow
-
-    test:
-      commands:
-        - test -f ${SP_DIR}/pyarrow/tests/test_array.py
 
 about:
   home: http://github.com/apache/arrow

@@ -61,6 +61,9 @@ if [[ "${target_platform}" == "linux-ppc64le" ]]; then
   EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_ALTIVEC=ON"
 fi
 
+# MAKE_CXX_FLAGS_RELEASE is being set to -O2 due to compiler errors seen with
+# GCC 7 on x86.
+
 cmake \
     -DARROW_BOOST_USE_SHARED=ON \
     -DARROW_BUILD_BENCHMARKS=OFF \
@@ -89,6 +92,7 @@ cmake \
     -DARROW_WITH_ZLIB=ON \
     -DARROW_WITH_ZSTD=ON \
     -DCMAKE_BUILD_TYPE=release \
+    -DCMAKE_CXX_FLAGS_RELEASE="-O2" \
     -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_INSTALL_PREFIX=$PREFIX \
     -DLLVM_TOOLS_BINARY_DIR=$PREFIX/bin \
