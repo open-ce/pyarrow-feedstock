@@ -60,6 +60,9 @@ fi
 if [[ "${target_platform}" == "linux-ppc64le" ]]; then
   EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_ALTIVEC=ON"
 fi
+if [[ "${target_platform}" != "linux-s390x" ]]; then
+  EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_USE_LD_GOLD=ON"
+fi
 
 # MAKE_CXX_FLAGS_RELEASE is being set to -O2 due to compiler errors seen with
 # GCC 7 on x86.
@@ -84,7 +87,6 @@ cmake \
     -DARROW_PLASMA=ON \
     -DARROW_PYTHON=ON \
     -DARROW_S3=OFF \
-    -DARROW_USE_LD_GOLD=ON \
     -DARROW_WITH_BROTLI=ON \
     -DARROW_WITH_BZ2=ON \
     -DARROW_WITH_LZ4=ON \
