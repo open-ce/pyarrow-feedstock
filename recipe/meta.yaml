@@ -197,14 +197,12 @@ outputs:
         - libstdcxx-ng {{ libstdcxx }}
       run:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
-        - brotli  # [s390x]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
         # Use pins to control cos6/cos7 match
         - libgcc-ng  {{ libgcc }}
         - libstdcxx-ng {{ libstdcxx }}
-        - libutf8proc  # [s390x]
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
