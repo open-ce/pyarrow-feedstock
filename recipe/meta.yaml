@@ -49,6 +49,7 @@ outputs:
       run_exports:
         - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
       ignore_run_exports:
+        - abseil-cpp
         - cudatoolkit
         - grpc-cpp
         - libprotobuf
