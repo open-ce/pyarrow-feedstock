@@ -16,7 +16,7 @@ source:
     - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
 
 build:
-  number: 11
+  number: 12
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -54,8 +54,6 @@ outputs:
         - libprotobuf
         - zstd
         - orc
-        - libgcc-ng
-        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -111,9 +109,6 @@ outputs:
         - libprotobuf {{ protobuf }}
         - zstd {{ zstd }}
         - orc 1.6.*
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
         - libutf8proc  # [s390x]
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
@@ -168,8 +163,6 @@ outputs:
 {% endif %}
       ignore_run_exports:
         - cudatoolkit
-        - libgcc-ng
-        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -200,9 +193,6 @@ outputs:
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
