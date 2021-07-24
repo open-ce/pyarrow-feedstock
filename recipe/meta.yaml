@@ -14,9 +14,11 @@ source:
   patches:
     # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
     - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
+    # https://github.com/apache/arrow/pull/9569
+    - 9569.patch
 
 build:
-  number: 12
+  number: 13
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
