@@ -15,7 +15,7 @@ source:
     # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
     - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
     # https://github.com/apache/arrow/pull/9569
-    - 9569.patch
+    - 0301-fix-option-to-disable-TLS-verification.patch
 
 build:
   number: 13
