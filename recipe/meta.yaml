@@ -71,9 +71,6 @@ outputs:
         - make
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -99,9 +96,6 @@ outputs:
         - thrift-cpp
         - zlib {{ zlib }}
         - zstd {{ zstd }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
       run:
         - brotli  # [s390x]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
@@ -174,9 +168,6 @@ outputs:
         - make
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
       host:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
@@ -187,9 +178,6 @@ outputs:
         - setuptools_scm 5.0.2
         - setuptools-scm 5.0.2
         - six {{ six }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
       run:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
