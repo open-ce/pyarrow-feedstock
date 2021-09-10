@@ -18,7 +18,7 @@ source:
     - 0301-fix-option-to-disable-TLS-verification.patch
 
 build:
-  number: 13
+  number: 14
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -60,7 +60,7 @@ outputs:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
       build:
-        - abseil-cpp {{ abseil_cpp }} # [s390x]
+        - abseil-cpp {{ abseil_cpp }}
         - libprotobuf {{ protobuf }}
         - grpc-cpp {{ grpc_cpp }}
         # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
@@ -77,7 +77,7 @@ outputs:
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
-        - abseil-cpp {{ abseil_cpp }} # [s390x]
+        - abseil-cpp {{ abseil_cpp }}
         - boost-cpp {{ boost }}
         - brotli
         - bzip2
