@@ -72,8 +72,8 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
+        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
+        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -100,8 +100,9 @@ outputs:
         - zlib {{ zlib }}
         - zstd {{ zstd }}
         # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
+        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
+        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
+        - openssl 1.1.1k                   # [x86_64 and c_compiler_version == "7.2.*"]
       run:
         - brotli  # [s390x]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
