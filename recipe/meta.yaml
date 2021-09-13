@@ -14,9 +14,11 @@ source:
   patches:
     # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
     - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
+    # https://github.com/apache/arrow/pull/9569
+    - 0301-fix-option-to-disable-TLS-verification.patch
 
 build:
-  number: 11
+  number: 15
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -54,26 +56,28 @@ outputs:
         - libprotobuf
         - zstd
         - orc
-        - libgcc-ng
-        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
       build:
+        - abseil-cpp {{ abseil_cpp }}
         - libprotobuf {{ protobuf }}
         - grpc-cpp {{ grpc_cpp }}
-        - cmake 3.19   # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
+        # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
+        - cmake 3.19        # [not s390x]
+        - cmake {{ cmake }} # [s390x]
         - autoconf
         - ninja
         - make
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
+        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
+        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
+        - abseil-cpp {{ abseil_cpp }}
         - boost-cpp {{ boost }}
         - brotli
         - bzip2
@@ -83,7 +87,7 @@ outputs:
         - glog
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ protobuf }}
-        - llvmdev 10
+        - llvmdev 10  # [not s390x]
         - libutf8proc
         - lz4-c
         - numpy {{ numpy }}
@@ -96,9 +100,11 @@ outputs:
         - zlib {{ zlib }}
         - zstd {{ zstd }}
         # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
+        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
+        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
+        - openssl 1.1.1k                   # [x86_64 and c_compiler_version == "7.2.*"]
       run:
+        - brotli  # [s390x]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
@@ -106,9 +112,7 @@ outputs:
         - libprotobuf {{ protobuf }}
         - zstd {{ zstd }}
         - orc 1.6.*
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
+        - libutf8proc  # [s390x]
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
@@ -162,8 +166,6 @@ outputs:
 {% endif %}
       ignore_run_exports:
         - cudatoolkit
-        - libgcc-ng
-        - libstdcxx-ng
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
@@ -194,9 +196,6 @@ outputs:
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}
-        - libstdcxx-ng {{ libstdcxx }}
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
 
