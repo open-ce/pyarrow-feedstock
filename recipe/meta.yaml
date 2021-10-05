@@ -149,7 +149,6 @@ outputs:
 
   - name: pyarrow
     script: build-pyarrow.sh
-    version: {{ version }}
     build:
       string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
       string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
