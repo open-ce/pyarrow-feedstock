@@ -19,7 +19,6 @@ build:
 
 outputs:
   - name: arrow-cpp-proc
-    version: {{ build_ext_version }}
     build:
       number: {{ proc_build_number }}
       string: {{ build_ext }}
@@ -35,7 +34,6 @@ outputs:
 
   - name: arrow-cpp
     script: build-arrow.sh
-    version: {{ version }}
     build:
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
@@ -109,7 +107,7 @@ outputs:
         - orc 1.6.*
         - libutf8proc  # [s390x]
       run_constrained:
-        - arrow-cpp-proc * {{ build_ext }}
+        - arrow-cpp-proc {{ build_ext }}
 
     about:
       home: http://github.com/apache/arrow
@@ -192,7 +190,7 @@ outputs:
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
       run_constrained:
-        - arrow-cpp-proc * {{ build_ext }}
+        - arrow-cpp-proc {{ build_ext }}
 
     about:
       home: http://github.com/apache/arrow
