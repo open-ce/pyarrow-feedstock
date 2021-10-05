@@ -1,8 +1,8 @@
-{% set version = "3.0.0" %}
+{% set version = "5.0.0" %}
 {% set build_ext_version = version %}
 {% set build_ext = "cuda" if build_type == 'cuda' else "cpu" %}
 {% set proc_build_number = "1" %}
-{% set checksum = "73c2cc3be537aa1f3fd9490cfec185714168c9bfd599d23e287ab0cc0558e27a" %}
+{% set checksum = "c3b4313eca594c20f761a836719721aaf0760001af896baec3ab64420ff9910a" %}
 
 package:
   name: arrow-cpp-ext
@@ -11,14 +11,9 @@ package:
 source:
   url: https://dist.apache.org/repos/dist/release/arrow/arrow-{{ version }}/apache-arrow-{{ version }}.tar.gz
   sha256: {{ checksum }}
-  patches:
-    # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
-    - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
-    # https://github.com/apache/arrow/pull/9569
-    - 0301-fix-option-to-disable-TLS-verification.patch
 
 build:
-  number: 15
+  number: 1
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
