@@ -107,7 +107,7 @@ outputs:
         - orc 1.6.*
         - libutf8proc  # [s390x]
       run_constrained:
-        - arrow-cpp-proc {{ build_ext }}
+        - arrow-cpp-proc * {{ build_ext }}
 
     about:
       home: http://github.com/apache/arrow
@@ -189,7 +189,7 @@ outputs:
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
         - python {{ python }}
       run_constrained:
-        - arrow-cpp-proc {{ build_ext }}
+        - arrow-cpp-proc * {{ build_ext }}
 
     about:
       home: http://github.com/apache/arrow
