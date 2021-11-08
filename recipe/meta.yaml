@@ -2,14 +2,14 @@
 {% set build_ext_version = version %}
 {% set build_ext = "cuda" if build_type == 'cuda' else "cpu" %}
 {% set proc_build_number = "1" %}
-{% set checksum = "73c2cc3be537aa1f3fd9490cfec185714168c9bfd599d23e287ab0cc0558e27a" %}
+{% set checksum = "fc461c4f0a60e7470a7c58b28e9344aa8fb0be5cc982e9658970217e084c3a82" %}
 
 package:
   name: arrow-cpp-ext
   version: {{ version }}
 
 source:
-  url: https://dist.apache.org/repos/dist/release/arrow/arrow-{{ version }}/apache-arrow-{{ version }}.tar.gz
+  url: https://github.com/apache/arrow/archive/refs/tags/apache-arrow-{{ version }}.tar.gz
   sha256: {{ checksum }}
   patches:
     # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
@@ -18,7 +18,7 @@ source:
     - 0301-fix-option-to-disable-TLS-verification.patch
 
 build:
-  number: 15
+  number: 16
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
