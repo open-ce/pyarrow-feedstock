@@ -2,7 +2,7 @@
 {% set build_ext_version = version %}
 {% set build_ext = "cuda" if build_type == 'cuda' else "cpu" %}
 {% set proc_build_number = "1" %}
-{% set checksum = "c3b4313eca594c20f761a836719721aaf0760001af896baec3ab64420ff9910a" %}
+{% set checksum = "ec3bdae6ccc08de5b5adcf9cbe7cbc085cab0ba06c8e6d3abfc3ed1cd4c1c9a2" %}
 
 package:
   name: arrow-cpp-ext
