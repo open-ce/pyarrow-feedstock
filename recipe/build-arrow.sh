@@ -52,7 +52,7 @@ fi
 EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_GANDIVA=OFF"
 export BOOST_ROOT="${LIBRARY_PREFIX}"
 export Boost_ROOT="${LIBRARY_PREFIX}"
-
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -L${BUILD_PREFIX}/lib -llz4 -lzstd -lsnappy -lz -lbz2 "
 #SIMD Settings
 if [[ "${target_platform}" == "linux-64" ]]; then
   EXTRA_CMAKE_ARGS=" ${EXTRA_CMAKE_ARGS} -DARROW_SIMD_LEVEL=SSE4_2"
