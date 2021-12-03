@@ -1,8 +1,8 @@
-{% set version = "3.0.0" %}
+{% set version = "5.0.0" %}
 {% set build_ext_version = version %}
 {% set build_ext = "cuda" if build_type == 'cuda' else "cpu" %}
 {% set proc_build_number = "1" %}
-{% set checksum = "fc461c4f0a60e7470a7c58b28e9344aa8fb0be5cc982e9658970217e084c3a82" %}
+{% set checksum = "ec3bdae6ccc08de5b5adcf9cbe7cbc085cab0ba06c8e6d3abfc3ed1cd4c1c9a2" %}
 
 package:
   name: arrow-cpp-ext
@@ -11,20 +11,14 @@ package:
 source:
   url: https://github.com/apache/arrow/archive/refs/tags/apache-arrow-{{ version }}.tar.gz
   sha256: {{ checksum }}
-  patches:
-    # 03xx - patch temporary to fix a problem that when fixed upstream can be removed
-    - 0300-ARROW-12917-C-Fix-handling-of-decimal-types-with-neg.patch
-    # https://github.com/apache/arrow/pull/9569
-    - 0301-fix-option-to-disable-TLS-verification.patch
 
 build:
-  number: 16
+  number: 1
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
 outputs:
   - name: arrow-cpp-proc
-    version: {{ build_ext_version }}
     build:
       number: {{ proc_build_number }}
       string: {{ build_ext }}
@@ -40,7 +34,6 @@ outputs:
 
   - name: arrow-cpp
     script: build-arrow.sh
-    version: {{ version }}
     build:
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
@@ -156,7 +149,6 @@ outputs:
 
   - name: pyarrow
     script: build-pyarrow.sh
-    version: {{ version }}
     build:
       string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
       string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
