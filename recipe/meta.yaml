@@ -86,7 +86,7 @@ outputs:
         - libutf8proc
         - lz4-c
         - numpy {{ numpy }}
-        - orc 1.6.*
+        - orc 1.7.*
         - python {{ python }}
         - rapidjson
         - re2
@@ -106,7 +106,7 @@ outputs:
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ protobuf }}
         - zstd {{ zstd }}
-        - orc 1.6.*
+        - orc 1.7.*
         - libutf8proc  # [s390x]
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
