@@ -11,9 +11,11 @@ package:
 source:
   url: https://github.com/apache/arrow/archive/refs/tags/apache-arrow-{{ version }}.tar.gz
   sha256: {{ checksum }}
+  patches:
+    - s390x_arrow_11686_11687.patch # [s390x]
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
