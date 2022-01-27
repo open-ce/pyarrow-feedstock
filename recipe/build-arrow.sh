@@ -67,6 +67,12 @@ fi
 # MAKE_CXX_FLAGS_RELEASE is being set to -O2 due to compiler errors seen with
 # GCC 7 on x86.
 
+if [[ $ppc_arch == "p10" ]]
+then
+  export AR=/opt/rh/gcc-toolset-10/root/usr/bin/ar
+  export RANLIB=/opt/rh/gcc-toolset-10/root/usr/bin/ranlib
+fi
+
 cmake \
     -DARROW_BOOST_USE_SHARED=ON \
     -DARROW_BUILD_BENCHMARKS=OFF \
