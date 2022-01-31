@@ -1,6 +1,6 @@
 #!/bin/bash
 # *****************************************************************
-# (C) Copyright IBM Corp. 2019, 2021. All Rights Reserved.
+# (C) Copyright IBM Corp. 2019, 2022. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -69,8 +69,14 @@ fi
 
 if [[ $ppc_arch == "p10" ]]
 then
-  export AR=/opt/rh/gcc-toolset-10/root/usr/bin/ar
-  export RANLIB=/opt/rh/gcc-toolset-10/root/usr/bin/ranlib
+  if [[ -z "${GCC_10_HOME}" ]];
+  then
+    echo "Please set GCC_10_HOME to the install path of gcc-toolset-10"
+    exit 1
+  else
+    export AR=${GCC_10_HOME}/bin/ar
+    export RANLIB=${GCC_10_HOME}/bin/ranlib
+  fi
 fi
 
 cmake \
