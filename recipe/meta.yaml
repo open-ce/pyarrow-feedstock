@@ -16,7 +16,7 @@ source:
     - 0301-s390x-arrow-11686-11687.patch # [s390x]
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -40,10 +40,9 @@ outputs:
     build:
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
-{% if build_type == 'cuda' %}
       script_env:
-        - CUDA_HOME
-{% endif %}
+        - CUDA_HOME            #[build_type == 'cuda']
+        - GCC_10_HOME          #[ppc_arch == 'p10']
       run_exports:
         - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
       ignore_run_exports:
@@ -65,11 +64,8 @@ outputs:
         - autoconf
         - ninja
         - make
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
-        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
+        - {{ compiler('c') }}              #[ppc_arch != "p10"]
+        - {{ compiler('cxx') }}            #[ppc_arch != "p10"]
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -95,10 +91,6 @@ outputs:
         - thrift-cpp
         - zlib {{ zlib }}
         - zstd {{ zstd }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
-        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
-        - openssl 1.1.1k                   # [x86_64 and c_compiler_version == "7.2.*"]
       run:
         - brotli  # [s390x]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
@@ -168,11 +160,8 @@ outputs:
         - cmake
         - ninja
         - make
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
-        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
+        - {{ compiler('c') }}              #[ppc_arch != "p10"]
+        - {{ compiler('cxx') }}            #[ppc_arch != "p10"]
       host:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
@@ -183,9 +172,6 @@ outputs:
         - setuptools_scm 5.0.2
         - setuptools-scm 5.0.2
         - six {{ six }}
-        # Use pins to control cos6/cos7 match
-        - libgcc-ng  {{ libgcc }}          # [x86_64 and c_compiler_version == "7.2.*"]
-        - libstdcxx-ng {{ libstdcxx }}     # [x86_64 and c_compiler_version == "7.2.*"]
       run:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
@@ -222,4 +208,3 @@ about:
 extra:
   recipe-maintainers:
     - open-ce/open-ce-dev-team
-
