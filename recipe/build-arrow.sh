@@ -1,6 +1,6 @@
 #!/bin/bash
 # *****************************************************************
-# (C) Copyright IBM Corp. 2019, 2021. All Rights Reserved.
+# (C) Copyright IBM Corp. 2019, 2022. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,6 +66,18 @@ fi
 
 # MAKE_CXX_FLAGS_RELEASE is being set to -O2 due to compiler errors seen with
 # GCC 7 on x86.
+
+if [[ $ppc_arch == "p10" ]]
+then
+  if [[ -z "${GCC_10_HOME}" ]];
+  then
+    echo "Please set GCC_10_HOME to the install path of gcc-toolset-10"
+    exit 1
+  else
+    export AR=${GCC_10_HOME}/bin/ar
+    export RANLIB=${GCC_10_HOME}/bin/ranlib
+  fi
+fi
 
 cmake \
     -DARROW_BOOST_USE_SHARED=ON \
