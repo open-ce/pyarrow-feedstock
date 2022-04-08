@@ -112,6 +112,8 @@ outputs:
       summary: C++ libraries for Apache Arrow
 
     test:
+      requires:
+        - conda-build
       commands:
         # headers
         - test -f $PREFIX/include/arrow/api.h
