@@ -1,8 +1,8 @@
-{% set version = "5.0.0" %}
+{% set version = "7.0.0" %}
 {% set build_ext_version = version %}
 {% set build_ext = "cuda" if build_type == 'cuda' else "cpu" %}
 {% set proc_build_number = "1" %}
-{% set checksum = "ec3bdae6ccc08de5b5adcf9cbe7cbc085cab0ba06c8e6d3abfc3ed1cd4c1c9a2" %}
+{% set checksum = "57e13c62f27b710e1de54fd30faed612aefa22aa41fa2c0c3bacd204dd18a8f3" %}
 
 package:
   name: arrow-cpp-ext
@@ -16,7 +16,7 @@ source:
     - 0301-s390x-arrow-11686-11687.patch # [s390x]
 
 build:
-  number: 4
+  number: 1
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -112,6 +112,8 @@ outputs:
       summary: C++ libraries for Apache Arrow
 
     test:
+      requires:
+        - conda-build
       commands:
         # headers
         - test -f $PREFIX/include/arrow/api.h
