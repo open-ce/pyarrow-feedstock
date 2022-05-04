@@ -69,13 +69,13 @@ fi
 
 if [[ $ppc_arch == "p10" ]]
 then
-  if [[ -z "${GCC_10_HOME}" ]];
+  if [[ -z "${GCC_11_HOME}" ]];
   then
-    echo "Please set GCC_10_HOME to the install path of gcc-toolset-10"
+    echo "Please set GCC_11_HOME to the install path of gcc-toolset-11"
     exit 1
   else
-    export AR=${GCC_10_HOME}/bin/ar
-    export RANLIB=${GCC_10_HOME}/bin/ranlib
+    export AR=${GCC_11_HOME}/bin/ar
+    export RANLIB=${GCC_11_HOME}/bin/ranlib
   fi
 fi
 
