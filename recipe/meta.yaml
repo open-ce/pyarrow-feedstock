@@ -16,7 +16,7 @@ source:
     - 0301-s390x-arrow-11686-11687.patch # [s390x]
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -93,7 +93,7 @@ outputs:
         - zstd {{ zstd }}
       run:
         - brotli  # [s390x]
-        - {{ pin_compatible('numpy', lower_bound='1.16') }}
+        - numpy {{ numpy }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
         - grpc-cpp {{ grpc_cpp }}
