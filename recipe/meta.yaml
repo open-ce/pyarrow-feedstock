@@ -59,8 +59,8 @@ outputs:
         - autoconf
         - ninja
         - make
-        - {{ compiler('c') }}              #[ppc_arch != "p10"]
-        - {{ compiler('cxx') }}            #[ppc_arch != "p10"]
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -157,8 +157,8 @@ outputs:
         - cmake
         - ninja
         - make
-        - {{ compiler('c') }}              #[ppc_arch != "p10"]
-        - {{ compiler('cxx') }}            #[ppc_arch != "p10"]
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
