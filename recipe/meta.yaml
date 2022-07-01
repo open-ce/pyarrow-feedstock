@@ -1,19 +1,18 @@
-{% set version = "7.0.0" %}
+{% set version = "8.0.0" %}
 {% set build_ext_version = version %}
 {% set build_ext = "cuda" if build_type == 'cuda' else "cpu" %}
 {% set proc_build_number = "1" %}
-{% set checksum = "57e13c62f27b710e1de54fd30faed612aefa22aa41fa2c0c3bacd204dd18a8f3" %}
 
 package:
   name: arrow-cpp-ext
   version: {{ version }}
 
 source:
-  url: https://github.com/apache/arrow/archive/refs/tags/apache-arrow-{{ version }}.tar.gz
-  sha256: {{ checksum }}
+  git_url: https://github.com/apache/arrow/
+  git_rev: apache-arrow-{{ version }}
 
 build:
-  number: 3
+  number: 1
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -38,8 +37,7 @@ outputs:
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}{{ cudatoolkit | replace(".*", "") }} #[build_type == 'cuda']
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
       script_env:
-        - CUDA_HOME            #[build_type == 'cuda']
-        - GCC_11_HOME          #[ppc_arch == 'p10']
+        - CUDA_HOME            #[build_type == 'cuda']        
       run_exports:
         - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
       ignore_run_exports:
@@ -61,8 +59,8 @@ outputs:
         - autoconf
         - ninja
         - make
-        - {{ compiler('c') }}              #[ppc_arch != "p10"]
-        - {{ compiler('cxx') }}            #[ppc_arch != "p10"]
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
       host:
         # Disable AWS S3 support
         #- aws-sdk-cpp
@@ -159,8 +157,8 @@ outputs:
         - cmake
         - ninja
         - make
-        - {{ compiler('c') }}              #[ppc_arch != "p10"]
-        - {{ compiler('cxx') }}            #[ppc_arch != "p10"]
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('arrow-cpp', exact=True) }}
         - cudatoolkit {{ cudatoolkit }}  # [build_type == 'cuda']
