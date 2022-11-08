@@ -4,7 +4,7 @@ tests:
         PYARROW_LOCATION=$(python -c "import os; import pyarrow; print(os.path.dirname(pyarrow.__file__))")
         echo $PYARROW_LOCATION
         conda install -y git
-        git clone --recursive -b apache-arrow-$(python -c "import pyarrow; print(pyarrow.__version__)") http://github.com/apache/arrow
+        git clone --recursive -b apache-arrow-$(python -c "import pyarrow; print(pyarrow.__version__[1:])") http://github.com/apache/arrow
         cp -r arrow/python/pyarrow/tests $PYARROW_LOCATION
         conda install -y hypothesis pytest pytz numpy
         pip install pytest-lazy-fixture
