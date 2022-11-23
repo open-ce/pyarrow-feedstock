@@ -5,7 +5,7 @@
 
 package:
   name: arrow-cpp-ext
-  version: v{{ version }}
+  version: {{ version }}
 
 source:
   git_url: https://github.com/apache/arrow/
