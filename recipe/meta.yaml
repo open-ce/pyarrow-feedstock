@@ -52,7 +52,7 @@ outputs:
     requirements:
       build:
         - abseil-cpp {{ abseil_cpp }}
-        - libprotobuf {{ protobuf }}
+        - libprotobuf {{ libprotobuf }}
         - grpc-cpp {{ grpc_cpp }}
         # to avoid https://gitlab.kitware.com/cmake/cmake/-/issues/18810
         - cmake 3.19        # [not s390x]
