@@ -47,6 +47,7 @@ outputs:
         - libprotobuf
         - zstd
         - orc
+        - boost-cpp
       track_features:
         {{ "- arrow-cuda" if build_type == 'cuda' else "" }}
     requirements:
