@@ -1,4 +1,4 @@
-{% set version = "11.0.0" %}
+{% set version = "12.0.1" %}
 {% set build_ext_version = version %}
 {% set build_ext = "cuda" if build_type == 'cuda' else "cpu" %}
 {% set proc_build_number = "1" %}
@@ -12,7 +12,7 @@ source:
   git_rev: apache-arrow-{{ version }}
 
 build:
-  number: 2
+  number: 1
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -80,7 +80,7 @@ outputs:
         - libutf8proc
         - lz4-c
         - numpy {{ numpy }}
-        - orc 1.8.*
+        - orc 1.9.*
         - python {{ python }}
         - rapidjson
         - re2
@@ -96,7 +96,7 @@ outputs:
         - grpc-cpp {{ grpc_cpp }}
         - libprotobuf {{ libprotobuf }}
         - zstd {{ zstd }}
-        - orc 1.8.*
+        - orc 1.9.*
         - libutf8proc  # [s390x]
       run_constrained:
         - arrow-cpp-proc * {{ build_ext }}
@@ -115,7 +115,6 @@ outputs:
         # headers
         - test -f $PREFIX/include/arrow/api.h
         - test -f $PREFIX/include/arrow/flight/types.h
-        - test -f $PREFIX/include/plasma/client.h
         # - test -f $PREFIX/include/gandiva/engine.h 
         - test -f $PREFIX/include/parquet/api/reader.h
 
@@ -124,7 +123,6 @@ outputs:
         - test -f $PREFIX/lib/libarrow_dataset${SHLIB_EXT}
         - test -f $PREFIX/lib/libarrow_flight${SHLIB_EXT}
         - test -f $PREFIX/lib/libparquet${SHLIB_EXT}
-        - test -f $PREFIX/lib/libplasma${SHLIB_EXT}
         - test -f $PREFIX/lib/libarrow_cuda${SHLIB_EXT}    # [build_type == 'cuda']
         - test ! -f $PREFIX/lib/libarrow_cuda${SHLIB_EXT}  # [build_type != 'cuda']   
 
@@ -132,7 +130,6 @@ outputs:
         - test ! -f $PREFIX/lib/libarrow.a
         - test ! -f $PREFIX/lib/libarrow_dataset.a
         - test ! -f $PREFIX/lib/libarrow_flight.a
-        - test ! -f $PREFIX/lib/libplasma.a
         - test ! -f $PREFIX/lib/libparquet.a
         # - test ! -f $PREFIX/lib/libgandiva.a
 
