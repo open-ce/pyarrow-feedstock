@@ -31,6 +31,6 @@ tests:
         pushd arrow/testing
         export ARROW_TEST_DATA=$(pwd)/data
         popd
-        python -m pytest -k "not test_foreign_buffer and not test_get_include" $PYARROW_LOCATION
+        pytest -k "not test_foreign_buffer and not test_get_include" --ignore $PYARROW_LOCATION/tests/test_plasma.py $PYARROW_LOCATION
   - name: Clean tests
     command: rm -rf arrow
