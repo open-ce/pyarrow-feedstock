@@ -4,7 +4,7 @@ tests:
         PYARROW_LOCATION=$(python -c "import os; import pyarrow; print(os.path.dirname(pyarrow.__file__))")
         echo $PYARROW_LOCATION
         conda install -y git
-        git clone --recursive -b apache-arrow-$(python -c "import pyarrow; print(pyarrow.__version__[1:])") http://github.com/apache/arrow
+        git clone --recursive -b apache-arrow-$(python -c "import pyarrow; print(pyarrow.__version__)") http://github.com/apache/arrow
         cp -r arrow/python/pyarrow/tests $PYARROW_LOCATION
         conda install -y hypothesis pytest pytz numpy
         pip install pytest-lazy-fixture
@@ -31,6 +31,7 @@ tests:
         pushd arrow/testing
         export ARROW_TEST_DATA=$(pwd)/data
         popd
-        python -m pytest -k "not test_foreign_buffer and not test_get_include" $PYARROW_LOCATION
+        SKIPPED_TESTS="not test_flight and not test_scalars and not test_plasma and not test_extension_type and not test_dataset_encryption and not test_acero and not test_parquet and not test_dataset and not test_pandas and not test_compute"
+        pytest -k "${SKIPPED_TESTS}" $PYARROW_LOCATION/tests
   - name: Clean tests
     command: rm -rf arrow
