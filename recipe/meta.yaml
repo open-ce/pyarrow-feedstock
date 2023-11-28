@@ -10,9 +10,11 @@ package:
 source:
   git_url: https://github.com/apache/arrow/
   git_rev: apache-arrow-{{ version }}
+  patches:
+    - 0302-patch-to-fix-CVE-PR38608.patch
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
