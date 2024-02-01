@@ -14,7 +14,7 @@ source:
     - 0302-PR38608.patch
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
