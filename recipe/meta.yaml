@@ -14,7 +14,7 @@ source:
     - 0302-PR38608.patch
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -40,7 +40,7 @@ outputs:
       string: py{{ CONDA_PY}}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}_{{ build_ext }}  #[build_type == 'cpu']
       script_env:
         - CUDA_HOME            #[build_type == 'cuda']        
-        - GCC_11_HOME #[ppc_arch == 'p10']
+        - GCC_HOME #[ppc_arch == 'p10']
       run_exports:
         - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
       ignore_run_exports:
