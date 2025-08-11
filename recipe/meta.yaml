@@ -12,7 +12,7 @@ source:
   git_rev: apache-arrow-{{ version }}
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage("arrow-cpp", max_pin="x.x.x") }}
 
@@ -86,7 +86,7 @@ outputs:
         - re2
         - snappy
         - thrift-cpp
-        - zlib {{ zlib }}
+        - zlib
         - zstd {{ zstd }}
       run:
         - brotli  # [s390x]
