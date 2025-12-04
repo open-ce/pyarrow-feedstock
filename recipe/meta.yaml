@@ -89,8 +89,7 @@ outputs:
         - zlib
         - zstd {{ zstd }}
       run:
-        - brotli  # [s390x]
-        - brotli {{ brotli }} # [ppc64le]
+        - brotli {{ brotli }}
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
