@@ -90,7 +90,7 @@ outputs:
         - zstd {{ zstd }}
       run:
         - brotli  # [s390x]
-        - brotli {{ brotli }}
+        - brotli {{ brotli }} # [ppc64le]
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
