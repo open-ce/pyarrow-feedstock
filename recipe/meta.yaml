@@ -67,7 +67,7 @@ outputs:
         #- aws-sdk-cpp
         - libabseil {{ abseil_cpp }}
         - boost-cpp {{ boost }}
-        - brotli
+        - brotli {{ brotli }}
         - bzip2
         - c-ares
         - xsimd
@@ -89,7 +89,7 @@ outputs:
         - zlib
         - zstd {{ zstd }}
       run:
-        - brotli  # [s390x]
+        - brotli {{ brotli }}
         - {{ pin_compatible('numpy', lower_bound='1.16') }}
         - cudatoolkit {{ cudatoolkit }}    #[build_type == 'cuda']
         - python {{ python }}
